@@ -11,6 +11,17 @@ services:
     # https://registry.hub.docker.com/_/redis
     image: 'redis:latest'
 
+  nginx:
+    restart: always
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    ports:
+    - "3050:80"
+    depends_on:
+      - client
+      - api
+
   api:
     # server:5000 is a real address for docker
     build:
@@ -27,6 +38,10 @@ services:
       - PGDATABASE=postgres
       - PGPASSWORD=postgres_password
       - PGPORT=5432
+#    expose:
+#      - 5000
+#    ports:
+#      - "5000:5000"
 
   client:
     # client:3000 is a real address for docker
@@ -37,6 +52,10 @@ services:
     volumes:
       - /app/node_modules
       - ./client:/app
+#    expose:
+#      - 3000
+#    ports:
+#      - "3000:3000"
 
   worker:
     build:
