@@ -1,0 +1,48 @@
+version: '3'
+services:
+
+  postgres:
+    # https://hub.docker.com/_/postgres
+    image: 'postgres:latest'
+    environment:
+      - POSTGRES_PASSWORD=postgres_password
+
+  redis:
+    # https://registry.hub.docker.com/_/redis
+    image: 'redis:latest'
+
+  server:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./server
+    volumes:
+      - /app/node_modules # exclusion (do not overwrite, no access)
+      - ./server:/app # redirect to server for any access to app; any changes in server folder will be reflected to app folder
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6369
+      - PGUSER=postgres
+      - PGHOST=postgres
+      - PGDATABASE=postgres
+      - PGPASSWORD=postgres_password
+      - PGPORT=5432
+
+  client:
+    stdin_open: true
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./client
+    volumes:
+      - /app/node_modules
+      - ./client:/app
+
+  worker:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./worker
+    volumes:
+      - /app/node_modules
+      - ./worker:/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
