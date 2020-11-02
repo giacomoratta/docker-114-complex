@@ -11,7 +11,8 @@ services:
     # https://registry.hub.docker.com/_/redis
     image: 'redis:latest'
 
-  server:
+  api:
+    # server:5000 is a real address for docker
     build:
       dockerfile: Dockerfile.dev
       context: ./server
@@ -28,6 +29,7 @@ services:
       - PGPORT=5432
 
   client:
+    # client:3000 is a real address for docker
     stdin_open: true
     build:
       dockerfile: Dockerfile.dev
