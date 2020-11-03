@@ -44,6 +44,12 @@ app.get('/values/all', async (req, res) => {
   res.send(values.rows)
 })
 
+app.get('/values/reset', async (req, res) => {
+  await pgClient.query('DELETE from values')
+  redisClient.del('values')
+  res.send('ok')
+})
+
 app.get('/values/current', async (req, res) => {
   redisClient.hgetall('values', (err, values) => {
     if (err) console.error(err)
@@ -51,15 +57,15 @@ app.get('/values/current', async (req, res) => {
   })
 })
 
-app.get('/values', async (req, res) => {
+app.post('/values', async (req, res) => {
   const index = req.body.index
   if (parseInt(index) > 40) {
     return res.status(442).send('Index too high')
   }
   redisClient.hset('values', index, 'Nothing yet!')
   redisPublisher.publish('insert', index) // new insert event for redis
-  pgClient.query('INSERT INTO values(number VALUES($1)', [index])
-  res.send({ working: true })
+  pgClient.query('INSERT INTO values(number) VALUES($1)', [index])
+  res.send({ working: true, index })
 })
 
 app.listen(5000, err => {

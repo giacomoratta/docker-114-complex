@@ -32,7 +32,7 @@ services:
       - ./server:/app # redirect to server for any access to app; any changes in server folder will be reflected to app folder
     environment:
       - REDIS_HOST=redis
-      - REDIS_PORT=6369
+      - REDIS_PORT=6379
       - PGUSER=postgres
       - PGHOST=postgres
       - PGDATABASE=postgres

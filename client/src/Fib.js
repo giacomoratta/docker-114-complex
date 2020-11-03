@@ -9,6 +9,10 @@ class Fib extends Component {
   }
 
   componentDidMount() {
+    this.fetchData()
+  }
+
+  fetchData = () => {
     this.fetchValues()
     this.fetchIndexes()
   }
@@ -40,6 +44,7 @@ class Fib extends Component {
         </div>
       )
     }
+    return entries
   }
 
   handleSubmit = async (event) => {
@@ -48,26 +53,34 @@ class Fib extends Component {
       index: this.state.index
     })
     this.setState({ index: '' })
+    this.fetchData()
+  }
+
+  handleReset = async (event) => {
+    event.preventDefault()
+    await axios.get('/api/values/reset')
+    this.fetchData()
   }
 
   render() {
     return (
       <div>
         <form onSubmit={this.handleSubmit}>
-          <label>Enter you index:</label>
+          <label>Enter your index: </label>
           <input
             value={this.state.index}
             onChange={event => this.setState({ index: event.target.value })}
           />
-          <button>Submit</button>
+          <button type="submit">Submit</button>
         </form>
 
         <h3>Indexes I have seen:</h3>
         {this.renderSeenIndexes()}
 
-
         <h3>Calculated values:</h3>
         {this.renderValues()}
+
+        <button type="button" onClick={this.handleReset} style={{'margin':'2em'}}>Reset</button>
       </div>
     )
   }

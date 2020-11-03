@@ -19,5 +19,7 @@ function fib (index) {
  * we will run fibonacci function.
  */
 sub.on('message', (channel, message) => {
+  console.info('New value', message, 'on', channel)
   redisClient.hset('values', message, fib(parseInt(message)))
 })
+sub.subscribe('insert');
