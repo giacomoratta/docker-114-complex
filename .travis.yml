@@ -1,0 +1,33 @@
+
+# needed for docker (not needed anymore)
+# sudo: required
+
+language: generic
+
+services:
+  - docker
+
+before_install:
+  # Build Dockerfile.dev files in order to run tests (next step)
+  # N.B. context is not "." but "./client"
+  - docker build -t giacomoratta/docker-114-complex-test -f ./client/Dockerfile.dev ./client
+
+script:
+  # Run some tests before going to production
+  - docker run -e CI=true giacomoratta/docker-114-complex-test npm run test
+
+after_success:
+  - docker build -t giacomoratta/docker-114-complex-client ./client
+  - docker build -t giacomoratta/docker-114-complex-nginx ./nginx
+  - docker build -t giacomoratta/docker-114-complex-server ./server
+  - docker build -t giacomoratta/docker-114-complex-worker ./worker
+
+  # Log-in to Docker CLI
+  # > Travis Env. variables needed: DOCKER_ID, DOCKER_PASSWORD
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+
+  # Push images to Docker
+  - docker push giacomoratta/docker-114-complex-client
+  - docker push giacomoratta/docker-114-complex-nginx
+  - docker push giacomoratta/docker-114-complex-server
+  - docker push giacomoratta/docker-114-complex-worker
