@@ -31,3 +31,15 @@ after_success:
   - docker push giacomoratta/docker-114-complex-nginx
   - docker push giacomoratta/docker-114-complex-server
   - docker push giacomoratta/docker-114-complex-worker
+
+deploy:
+  provider: elasticbeanstalk
+  region: 'eu-west-1'
+  app: 'docker-114-complex'
+  env: 'Docker114Complex-env'
+  bucket_name: 'elasticbeanstalk-eu-west-1-478688081822'
+  bucket_path: 'docker-114'
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
